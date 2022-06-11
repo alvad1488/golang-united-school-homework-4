@@ -25,26 +25,12 @@ var (
 //
 // Use the errors defined above as described, again wrapping into fmt.Errorf
 
-func StringSum(input string) (output string, err error) {
+func CreateOperands(arrSigns []byte) (firstOperand, secondOperand, operation string, err error) {
 	var (
-		firstOperand  string = ""
-		secondOperand string = ""
-		sign          string = ""
-		operation     string = ""
-		strerr        *strconv.NumError
+		sign string = ""
 	)
 
-	if input == "" {
-		return "", fmt.Errorf("error! message = %q ", errorEmptyInput)
-	}
-
-	if strings.TrimSpace(input) == "" {
-		return "", fmt.Errorf("error! message = %q ", errorEmptyInput)
-	}
-
-	arrSigns := []byte(input)
-
-	for i := 0; i < len(input); i++ {
+	for i := 0; i < len(arrSigns); i++ {
 		sign = string(arrSigns[i])
 		if sign == " " {
 			continue
@@ -56,7 +42,7 @@ func StringSum(input string) (output string, err error) {
 					if len(secondOperand) == 0 {
 						operation = sign
 					} else {
-						return "", fmt.Errorf("error! message = %q ", errorNotTwoOperands)
+						return "", "", "", fmt.Errorf("error! message = %q ", errorNotTwoOperands)
 					}
 				}
 			} else {
@@ -69,32 +55,77 @@ func StringSum(input string) (output string, err error) {
 		}
 	}
 
-	if len(secondOperand) == 0 {
-		return "", fmt.Errorf("error! message = %q ", errorNotTwoOperands)
+	return firstOperand, secondOperand, operation, nil
+}
+
+func ConvertIntoNum(first, second string) (fsNum, scNum int, errors error) {
+	var (
+		strerr *strconv.NumError
+		err    error
+	)
+
+	if len(second) == 0 {
+		return 0, 0, fmt.Errorf("error! message = %q ", errorNotTwoOperands)
 	}
 
-	fsNum, err := strconv.Atoi(firstOperand)
+	fsNum, err = strconv.Atoi(first)
 
 	if err != nil {
-		strerr = &strconv.NumError{Func: "Atoi", Num: firstOperand, Err: strconv.ErrSyntax}
-		return "", fmt.Errorf("error! message = %q", strerr)
+		strerr = &strconv.NumError{Func: "Atoi", Num: first, Err: strconv.ErrSyntax}
+		return 0, 0, fmt.Errorf("error! message = %q", strerr)
 	}
 
-	scNum, err := strconv.Atoi(secondOperand)
+	scNum, err = strconv.Atoi(second)
 
 	if err != nil {
-		strerr = &strconv.NumError{Func: "Atoi", Num: firstOperand, Err: strconv.ErrSyntax}
-		return "", fmt.Errorf("error! message = %q", strerr)
+		strerr = &strconv.NumError{Func: "Atoi", Num: second, Err: strconv.ErrSyntax}
+		return 0, 0, fmt.Errorf("error! message = %q", strerr)
+	}
+
+	return fsNum, scNum, nil
+}
+
+func Execute(fOper, secOper int, sign string) int {
+	if sign == "+" {
+		return fOper + secOper
+	} else {
+		return fOper - secOper
+	}
+}
+
+func StringSum(input string) (output string, err error) {
+	var (
+		fsNum         int    = 0
+		scNum         int    = 0
+		firstOperand  string = ""
+		secondOperand string = ""
+		operation     string = ""
+	)
+
+	if input == "" {
+		return "", fmt.Errorf("error! message = %q ", errorEmptyInput)
+	}
+
+	if strings.TrimSpace(input) == "" {
+		return "", fmt.Errorf("error! message = %q ", errorEmptyInput)
+	}
+
+	arrSigns := []byte(input)
+	firstOperand, secondOperand, operation, err = CreateOperands(arrSigns)
+
+	if err != nil {
+		return "", err
+	}
+
+	fsNum, scNum, err = ConvertIntoNum(firstOperand, secondOperand)
+
+	if err != nil {
+		return "", err
 	}
 
 	var result int = 0
 
-	if operation == "+" {
-		result = fsNum + scNum
-	} else {
-		result = fsNum - scNum
-	}
-
+	result = Execute(fsNum, scNum, operation)
 	output = strconv.Itoa(result)
 
 	return output, nil
