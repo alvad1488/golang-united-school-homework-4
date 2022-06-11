@@ -2,6 +2,7 @@ package string_sum
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -30,19 +31,20 @@ func StringSum(input string) (output string, err error) {
 		secondOperand string = ""
 		sign          string = ""
 		operation     string = ""
+		strerr        *strconv.NumError
 	)
 
 	if input == "" {
-		return "", errorEmptyInput
+		return "", fmt.Errorf("error! message = %q ", errorEmptyInput)
 	}
 
 	if strings.TrimSpace(input) == "" {
-		return "", errorEmptyInput
+		return "", fmt.Errorf("error! message = %q ", errorEmptyInput)
 	}
 
 	arrSigns := []byte(input)
 
-	for i := 0; i < len(arrSigns); i++ {
+	for i := 0; i < len(input); i++ {
 		sign = string(arrSigns[i])
 		if sign == " " {
 			continue
@@ -54,7 +56,7 @@ func StringSum(input string) (output string, err error) {
 					if len(secondOperand) == 0 {
 						operation = sign
 					} else {
-						return "", errorNotTwoOperands
+						return "", fmt.Errorf("error! message = %q ", errorNotTwoOperands)
 					}
 				}
 			} else {
@@ -68,19 +70,21 @@ func StringSum(input string) (output string, err error) {
 	}
 
 	if len(secondOperand) == 0 {
-		return "", errorNotTwoOperands
+		return "", fmt.Errorf("error! message = %q ", errorNotTwoOperands)
 	}
 
 	fsNum, err := strconv.Atoi(firstOperand)
 
 	if err != nil {
-		return "", err
+		strerr = &strconv.NumError{Func: "Atoi", Num: firstOperand, Err: strconv.ErrSyntax}
+		return "", fmt.Errorf("error! message = %q", strerr)
 	}
 
 	scNum, err := strconv.Atoi(secondOperand)
 
 	if err != nil {
-		return "", err
+		strerr = &strconv.NumError{Func: "Atoi", Num: firstOperand, Err: strconv.ErrSyntax}
+		return "", fmt.Errorf("error! message = %q", strerr)
 	}
 
 	var result int = 0
