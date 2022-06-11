@@ -24,25 +24,6 @@ var (
 //
 // Use the errors defined above as described, again wrapping into fmt.Errorf
 
-func GetSign(inp byte) string {
-	sings := map[byte]string{
-		32: " ",
-		43: "+",
-		45: "-",
-		48: "0",
-		49: "1",
-		50: "2",
-		51: "3",
-		52: "4",
-		53: "5",
-		54: "6",
-		55: "7",
-		56: "8",
-		57: "9",
-	}
-	return sings[inp]
-}
-
 func StringSum(input string) (output string, err error) {
 	var (
 		firstOperand  string = ""
@@ -62,10 +43,7 @@ func StringSum(input string) (output string, err error) {
 	arrSigns := []byte(input)
 
 	for i := 0; i < len(arrSigns); i++ {
-		sign = GetSign(arrSigns[i])
-		if sign == "" {
-			sign = string(arrSigns[i])
-		}
+		sign = string(arrSigns[i])
 		if sign == " " {
 			continue
 		} else {
