@@ -2,6 +2,8 @@ package string_sum
 
 import (
 	"errors"
+	"strconv"
+	"strings"
 )
 
 //use these errors as appropriate, wrapping them with fmt.Errorf function
@@ -22,6 +24,96 @@ var (
 //
 // Use the errors defined above as described, again wrapping into fmt.Errorf
 
+func GetSign(inp byte) string {
+	sings := map[byte]string{
+		32: " ",
+		43: "+",
+		45: "-",
+		48: "0",
+		49: "1",
+		50: "2",
+		51: "3",
+		52: "4",
+		53: "5",
+		54: "6",
+		55: "7",
+		56: "8",
+		57: "9",
+	}
+	return sings[inp]
+}
+
 func StringSum(input string) (output string, err error) {
-	return "", nil
+	var (
+		firstOperand  string = ""
+		secondOperand string = ""
+		sign          string = ""
+		operation     string = ""
+	)
+
+	if input == "" {
+		return "", errorEmptyInput
+	}
+
+	if strings.TrimSpace(input) == "" {
+		return "", errorEmptyInput
+	}
+
+	arrSigns := []byte(input)
+
+	for i := 0; i < len(arrSigns); i++ {
+		sign = GetSign(arrSigns[i])
+		if sign == "" {
+			sign = string(arrSigns[i])
+		}
+		if sign == " " {
+			continue
+		} else {
+			if sign == "+" || sign == "-" {
+				if len(firstOperand) == 0 {
+					firstOperand = sign
+				} else {
+					if len(secondOperand) == 0 {
+						operation = sign
+					} else {
+						return "", errorNotTwoOperands
+					}
+				}
+			} else {
+				if len(operation) == 0 {
+					firstOperand += sign
+				} else {
+					secondOperand += sign
+				}
+			}
+		}
+	}
+
+	if len(secondOperand) == 0 {
+		return "", errorNotTwoOperands
+	}
+
+	fsNum, err := strconv.Atoi(firstOperand)
+
+	if err != nil {
+		return "", err
+	}
+
+	scNum, err := strconv.Atoi(secondOperand)
+
+	if err != nil {
+		return "", err
+	}
+
+	var result int = 0
+
+	if operation == "+" {
+		result = fsNum + scNum
+	} else {
+		result = fsNum - scNum
+	}
+
+	output = strconv.Itoa(result)
+
+	return output, nil
 }
