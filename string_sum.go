@@ -42,7 +42,7 @@ func CreateOperands(arrSigns []byte) (firstOperand, secondOperand, operation str
 					if len(secondOperand) == 0 {
 						operation = sign
 					} else {
-						return "", "", "", fmt.Errorf("error! message = %q ", errorNotTwoOperands)
+						return "", "", "", fmt.Errorf("%w", errorNotTwoOperands)
 					}
 				}
 			} else {
@@ -65,21 +65,21 @@ func ConvertIntoNum(first, second string) (fsNum, scNum int, errors error) {
 	)
 
 	if len(second) == 0 {
-		return 0, 0, fmt.Errorf("error! message = %q ", errorNotTwoOperands)
+		return 0, 0, fmt.Errorf("%w", errorNotTwoOperands)
 	}
 
 	fsNum, err = strconv.Atoi(first)
 
 	if err != nil {
 		strerr = &strconv.NumError{Func: "Atoi", Num: first, Err: strconv.ErrSyntax}
-		return 0, 0, fmt.Errorf("error! message = %q", strerr)
+		return 0, 0, fmt.Errorf("%w", strerr)
 	}
 
 	scNum, err = strconv.Atoi(second)
 
 	if err != nil {
 		strerr = &strconv.NumError{Func: "Atoi", Num: second, Err: strconv.ErrSyntax}
-		return 0, 0, fmt.Errorf("error! message = %q", strerr)
+		return 0, 0, fmt.Errorf("%w", strerr)
 	}
 
 	return fsNum, scNum, nil
@@ -103,11 +103,11 @@ func StringSum(input string) (output string, err error) {
 	)
 
 	if input == "" {
-		return "", fmt.Errorf("error! message = %q ", errorEmptyInput)
+		return "", fmt.Errorf("%w", errorEmptyInput)
 	}
 
 	if strings.TrimSpace(input) == "" {
-		return "", fmt.Errorf("error! message = %q ", errorEmptyInput)
+		return "", fmt.Errorf("%w", errorEmptyInput)
 	}
 
 	arrSigns := []byte(input)
